@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -42,7 +41,7 @@
         <!-- صندوق النتيجة (يظهر عند الضغط على الأزرار) -->
         <div id="resultBox" class="hidden text-right border-t border-slate-100 pt-4 animate-fade-in">
             <h3 class="text-md font-bold text-slate-700 mb-2">💡 الإجابة:</h3>
-            <div id="resultText" class="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 min-h-[80px]">
+            <div id="resultText" class="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 min-h-[80px] whitespace-pre-wrap">
                 جاري التفكير...
             </div>
         </div>
@@ -50,7 +49,7 @@
 
     <!-- كود الـ JavaScript للتحكم بالذكاء الاصطناعي -->
     <script>
-        function processAI(action) {
+        async function processAI(action) {
             const input = document.getElementById('userInput').value;
             const resultBox = document.getElementById('resultBox');
             const resultText = document.getElementById('resultText');
@@ -67,20 +66,39 @@
             // تحديد نوع الطلب بناءً على الزر
             let promptMessage = input;
             if (action === 'summarize') {
-                promptMessage = "قم بتلخيص النص التالي بشكل نقاط واضحة ومنظمة:\n" + input;
+                promptMessage = "قم بتلخيص النص التالي بشكل نقاط واضحة ومنظمة ولغة عربية سليمة:\n" + input;
             } else if (action === 'solve') {
-                promptMessage = "قم بحل السؤال التالي مع الشرح خطوة بخطوة بالتفصيل:\n" + input;
+                promptMessage = "قم بحل السؤال الدراسي التالي مع الشرح خطوة بخطوة بالتفصيل:\n" + input;
             }
 
-            console.log("إرسال الطلب لـ AI:", promptMessage);
-            
-            // محاكاة سريعة للنتيجة حتى نربطه بالمفتاح الحقيقي في الخطوة القادمة
-            setTimeout(() => {
-                resultText.innerText = "تمت المعالجة بنجاح! جاهزون الآن لربط الـ API الحقيقي لتظهر لك الإجابات الذكية هنا مباشرة.";
-            }, 2000);
+            // المفتاح السري الخاص بك مدمج وجاهز الآن
+            const API_KEY = 'AQ.Ab8RN6KzeiEhki2Yg_m81NlzS1EotuIqVxydlfeFlVHHKPJcHA'; 
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: promptMessage }] }]
+                    })
+                });
+
+                const data = await response.json();
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    // عرض النتيجة الحقيقية القادمة من Gemini
+                    resultText.innerText = data.candidates[0].content.parts[0].text;
+                } else {
+                    resultText.innerText = 'عذراً، حدث خطأ في استخراج الإجابة. تأكد من إعدادات المفتاح.';
+                }
+            } catch (error) {
+                console.error(error);
+                resultText.innerText = 'فشل الاتصال بالذكاء الاصطناعي. تحقق من الإنترنت أو صلاحية المفتاح.';
+            }
         }
     </script>
 
 </body>
 </html>
+
 
